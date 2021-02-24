@@ -1,0 +1,29 @@
+{
+   "compilerOptions": {
+      "lib": [
+         "es5",
+         "es6",
+         "es7"
+      ],
+      "target": "es5",
+      "module": "commonjs",
+      "moduleResolution": "node",
+      "outDir": "./build",
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "sourceMap": true,
+      "esModuleInterop": true
+   },
+   "include": [
+      "./src/**/*.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "./public",
+      "dist",
+      "test"
+    ],
+    "linterOptions": {
+      "exclude": []
+    }
+}
