@@ -1,4 +1,4 @@
-import { JsonController, Param, Body, Get, Post, Put, Delete, Authorized } from 'routing-controllers';
+import { JsonController, Param, Body, Get, Post, Put, Delete } from 'routing-controllers';
 import { injectable, inject } from "inversify";
 import IPathologyService from '../../domain/interfaces/services/IPathologyService';
 import PathologyRequest from '../requests/PathologyRequest';
@@ -6,7 +6,7 @@ import IPathologyRepository from '../../domain/interfaces/repositories/IPatholog
 import { Roles as _ } from '../../domain/enums/Roles';
 import Pathology from '../../domain/entities/Pathology';
 
-@Authorized([_.User])
+
 @injectable()
 @JsonController('/pathology')
 export default class PathologyController {
