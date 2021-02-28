@@ -9,8 +9,9 @@ export class CustomErrorHandler implements ExpressErrorMiddlewareInterface {
     console.log('do something...', error);
     const custom = response.status(error.httpCode).send({
       status: false,
-      mensage:  error.message,
-      name: error.name
+      name: error.name,
+      mensage:  error.message
+      
   })
 
     next(custom);

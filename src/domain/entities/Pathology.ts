@@ -1,11 +1,9 @@
 import { IsNotEmpty, Length } from 'class-validator';
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, Entity as Entities, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import Entity from './Entity';
 
-@Entity()
-export default class Pathology {
-
-    @PrimaryGeneratedColumn({ unsigned: true })
-	public id: number;
+@Entities()
+export default class Pathology extends Entity {
 
     @Column({ name: 'cid' })
     @IsNotEmpty()
@@ -14,13 +12,5 @@ export default class Pathology {
     @Column({ name: 'description' })
     @Length(4, 45)
     public Description: string;
-
-    @Column({ name: 'created_at' })
-    @CreateDateColumn()
-    public CreatedAt: Date;
-
-    @Column({ name: 'updated_at' })
-    @UpdateDateColumn()
-    public UpdatedAt: Date;
 
 }

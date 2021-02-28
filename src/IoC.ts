@@ -1,9 +1,12 @@
-import { IocAdapter } from 'routing-controllers';
+import 'reflect-metadata';
+import { IocAdapter, Action, useContainer, ClassConstructor } from 'routing-controllers';
 import { Container } from 'inversify';
-import { Action } from 'routing-controllers';
-import { ClassConstructor } from 'routing-controllers';
+import IPathologyService from './domain/interfaces/services/IPathologyService';
+import PathologyService from './infra/services/PathologyService';
+import PathologyRepository from './infra/repositories/PathologyRepository';
+import IPathologyRepository from './domain/interfaces/repositories/IPathologyRepository';
 
-export class InversifyAdapter implements IocAdapter {
+const Adapter = class implements IocAdapter {
   constructor(private readonly container: Container) {}
 
   get<T>(someClass: ClassConstructor<T>, action?: Action): T {
@@ -13,4 +16,20 @@ export class InversifyAdapter implements IocAdapter {
   }
 }
 
-export default { InversifyAdapter };
+class IoC {
+  private container: Container;
+  private inversifyAdapter: IocAdapter;
+
+  public constructor () {
+    this.container = new Container()
+  }
+
+  public containerRegister (): void  {
+    this.container.bind<IPathologyService>('PathologyService').to(PathologyService);
+    this.container.bind<IPathologyRepository>('PathologyRepository').to(PathologyRepository);
+    this.inversifyAdapter = new Adapter(this.container);
+    useContainer(this.inversifyAdapter);
+  }
+}
+
+export default new IoC()

@@ -1,35 +1,47 @@
-import { createConnection, Connection } from 'typeorm'
-import express from 'express'
-import cors from 'cors'
-import 'reflect-metadata'
-import { Action, RoutingControllersOptions, useExpressServer } from 'routing-controllers'
-import { Container } from 'inversify'
-import IPathologyService from './domain/interfaces/services/IPathologyService'
-import PathologyService from './infra/services/PathologyService'
-import PathologyRepository from './infra/repositories/PathologyRepository'
-import IPathologyRepository from './domain/interfaces/repositories/IPathologyRepository'
-import { InversifyAdapter } from './IoC'
-import { useContainer } from 'routing-controllers/container'
-import bodyParser from 'body-parser'
-import morgan from 'morgan'
-import compression from 'compression'
-import { Signale } from 'signale'
+import { Action, RoutingControllersOptions, useExpressServer } from 'routing-controllers';
+import { createConnection, Connection, getRepository } from 'typeorm';
+import config  from 'config';
+import express from 'express';
+import cors from 'cors';
+import 'reflect-metadata';
+import IoC  from './IoC';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import serveStatic from 'serve-static';
+import expressSession from 'express-session';
+import morgan from 'morgan';
+import compression from 'compression';
+import { Signale } from 'signale';
+import passport, { PassportStatic } from 'passport';
+import passportJWT from 'passport-jwt';
+import jwt from 'jsonwebtoken';
+import helmet from 'helmet';
+import cookieSession from 'cookie-session';
+import { User } from './domain/entities/User';
+//  const JwtStrategy = passportJWT.Strategy;
+//  const ExtractJwt = passportJWT.ExtractJwt;
 
 class Startup {
     private express: express.Application;
+    private passport: PassportStatic;
     private routingOptions: RoutingControllersOptions;
-    private container: Container;
-    private inversifyAdapter: InversifyAdapter;
+    private expressSessionOptions: expressSession.SessionOptions;
+    private cookieSessionOptions:  CookieSessionInterfaces.CookieSessionOptions
+    private jwtStrategy = passportJWT.Strategy;
+    private extractJwt = passportJWT.ExtractJwt;
+    private passaport: passport.PassportStatic
     public server: express.Application;
     public log: Signale
 
     public constructor () {
       this.express = express();
-      this.container = new Container()
+      this.passport = passport;
+      IoC.containerRegister();
       this.log = this.Logger();
+      this.expressSession();
+      this.cookieSession()
       this.middlewares();
-      this.containerRegister()
-      this.database()
+      this.database() 
       this.router();
       this.server = useExpressServer(this.express, this.routingOptions);
     }
@@ -38,42 +50,48 @@ class Startup {
       this.express.use(express.json())
       this.express.use(cors())
       this.express.use(morgan("dev"));
-      this.express.use(bodyParser.json({ limit: "1mb" }));
-      this.express.use(bodyParser.urlencoded({ limit: "1mb", extended: true }));
+      this.express.use(bodyParser.json({ limit: "2mb" }));
+      this.express.use(bodyParser.urlencoded({ limit: "2mb", extended: false }));
       this.express.use(compression());
+      this.express.use(helmet());
+      this.express.use(cookieParser());
+      this.express.use(serveStatic(__dirname + '../public'));
+      this.express.use(expressSession(this.expressSessionOptions));
+      // this.express.use(cookieSession(this.cookieSessionOptions));
+      // this.express.set('trust proxy', 1);
+      // this.passport.use(this.StrategiesForJwt());ls
+      this.express.use(this.passport.initialize());
+      this.express.use(this.passport.session());
     }
 
     private Logger (): Signale {
-      const options = {
+      let _signale = new Signale({
         disabled: false,
         interactive: false,
-        logLevel: 'info',
-        scope: 'prologyc',
-        secrets: [],
         stream: process.stdout,
-      };
-    
-      return new Signale(options);
-    }
-
-    private containerRegister (): void  {
-      this.container.bind<IPathologyService>('PathologyService').to(PathologyService);
-      this.container.bind<IPathologyRepository>('PathologyRepository').to(PathologyRepository);
-      this.inversifyAdapter = new InversifyAdapter(this.container);
-      useContainer(this.inversifyAdapter);
+      });
+  
+      _signale.config({
+        displayFilename: true,
+        displayTimestamp: true,
+        displayDate: false
+      });
+    return _signale;
     }
 
     private authorization (action: Action, roles: string[]) {
-      // const token = action.request.headers['authorization'];
-      // const user = await getEntityManager().findOneByToken(User, token);
-      // if (roles[0] == "roles") return true;
-      // if (user && roles.find(role => user.roles.indexOf(role) !== -1)) return true;
-      return true; 
+      const token = action.request.headers['authorization'];
+
+      const user = getRepository(User).findOneByToken(User, token);
+      if (user && !roles.length) return true;
+      if (user && roles.find(r => user.role.indexOf(r) !== -1)) return true;
+  
+      return false;
     }
 
     private currentUser (action: Action) {
-      // const token = action.request.headers['authorization'];
-      // return getEntityManager().findOneByToken(User, token); 
+      const token = action.request.headers['authorization'];
+      return getRepository(User).findOneByToken(User, token); 
       return false;
     }
 
@@ -85,11 +103,32 @@ class Startup {
         middlewares: [__dirname + '/api/middlewares/*.ts'],
         interceptors: [__dirname + '/api/interceptors/*.ts'],
         validation: true,
-        defaultErrorHandler: true,
+        defaultErrorHandler: false,
         authorizationChecker: this.authorization,
         currentUserChecker: this.currentUser,
       };
     } 
+
+    private expressSession () {
+      this.expressSessionOptions = { 
+        secret: config.get('expressSessionOptions.secret'), 
+        resave: true, 
+        name : 'sessionId',
+        saveUninitialized: true, 
+        cookie: { maxAge: 60 * 60 * 1000 } };  // 1 hour  
+    } 
+
+    private cookieSession () {
+      this.cookieSessionOptions = { 
+        name: 'session',
+        keys: ['key1', 'key2'],
+        secure: true,
+        httpOnly: true,
+        domain: config.get('cookieSessionOptions.domain'),
+        path: config.get('cookieSessionOptions.path'),
+        expires: new Date( Date.now() + 60 * 60 * 1000 ) // 1 hour  
+      } 
+    }
 
     private async database (): Promise<Connection> {
       const connection = await createConnection()

@@ -1,3 +1,9 @@
 import app from './Startup'
+import config  from 'config';
 
-app.server.listen(8433, () => app.log.success('Server started on port 8433!'))
+const _ = {
+    message: `Server started on port ${config.get('express.port')}!`,
+    port: config.get('express.port')
+}
+
+app.server.listen(_.port, () => app.log.success(_.message))

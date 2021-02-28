@@ -2,7 +2,7 @@ import { injectable, unmanaged } from 'inversify';
 import { Repository, getRepository, DeleteResult, UpdateResult } from 'typeorm';
 import IPathologyRepository from '../../domain/interfaces/repositories/IPathologyRepository';
 import Pathology from '../../domain/entities/Pathology';
-import PathologyRequest from '../../api/requests/PathologyRequest';
+import UpdatePathologyRequest from '../../api/requests/UpdatePathologyRequest';
 
  @injectable()
 export default class PathologyRepository implements IPathologyRepository  {
@@ -33,7 +33,7 @@ export default class PathologyRepository implements IPathologyRepository  {
     return await this._context.create(pathology);
   }
 
-  public async  update(pathology: PathologyRequest): Promise<UpdateResult> {
+  public async  update(pathology: UpdatePathologyRequest): Promise<UpdateResult> {
     const result = await this._context
       .createQueryBuilder()
       .update(Pathology)

@@ -1,13 +1,14 @@
-import { JsonController, Param, Body, Get, Post, Put, Delete } from 'routing-controllers';
+import { JsonController, Param, Body, Get, Post, Put, Delete, Authorized } from 'routing-controllers';
 import { injectable, inject } from "inversify";
 import IPathologyService from '../../domain/interfaces/services/IPathologyService';
-import PathologyRequest from '../requests/PathologyRequest';
+import UpdatePathologyRequest from '../requests/UpdatePathologyRequest';
 import IPathologyRepository from '../../domain/interfaces/repositories/IPathologyRepository';
 import { Roles as _ } from '../../domain/enums/Roles';
 import Pathology from '../../domain/entities/Pathology';
 
 
 @injectable()
+@Authorized(['LERU', 'AITE'])
 @JsonController('/pathology')
 export default class PathologyController {
   private readonly _service: IPathologyService;
@@ -48,7 +49,7 @@ export default class PathologyController {
   }
 
   @Put('/:id/update')
-  public updatePathology(@Param('id') id: number, @Body({ validate: true }) pathology: PathologyRequest) 
+  public updatePathology(@Param('id') id: number, @Body({ validate: true }) pathology: UpdatePathologyRequest) 
   {
     return this._repository.update(pathology);
   }

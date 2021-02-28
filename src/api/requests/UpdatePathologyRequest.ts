@@ -1,6 +1,6 @@
 import { IsEmail, Length, MinLength, IsNotEmpty } from "class-validator";
 
-export default class PathologyRequest {
+export default class UpdatePathologyRequest {
 
   constructor(){
     this.UpdatedAt = new Date();
