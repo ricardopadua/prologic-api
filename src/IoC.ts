@@ -5,6 +5,11 @@ import IPathologyService from './domain/interfaces/services/IPathologyService';
 import PathologyService from './infra/services/PathologyService';
 import PathologyRepository from './infra/repositories/PathologyRepository';
 import IPathologyRepository from './domain/interfaces/repositories/IPathologyRepository';
+import PathologyRequestHandler, { IPathologyRequestHandler } from './api/request-handlers/PathologyRequestHandler';
+import IUserRepository from './domain/interfaces/repositories/IUserRepository';
+import UserRepository from './infra/repositories/UserRepository';
+import UserRequestHandler, { IUserRequestHandler } from './api/request-handlers/UserRequestHandler';
+import { IOperationResult, OperationResult } from './api/operation-result/OperationResult';
 
 const Adapter = class implements IocAdapter {
   constructor(private readonly container: Container) {}
@@ -25,8 +30,12 @@ class IoC {
   }
 
   public containerRegister (): void  {
+    this.container.bind<IOperationResult>('OperationResult').to(OperationResult);
     this.container.bind<IPathologyService>('PathologyService').to(PathologyService);
     this.container.bind<IPathologyRepository>('PathologyRepository').to(PathologyRepository);
+    this.container.bind<IPathologyRequestHandler>('PathologyRequestHandler').to(PathologyRequestHandler);
+    this.container.bind<IUserRepository>('UserRepository').to(UserRepository);
+    this.container.bind<IUserRequestHandler>('UserRequestHandler').to(UserRequestHandler);
     this.inversifyAdapter = new Adapter(this.container);
     useContainer(this.inversifyAdapter);
   }

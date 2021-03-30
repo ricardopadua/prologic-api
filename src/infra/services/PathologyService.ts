@@ -23,7 +23,7 @@ export default class PathologyService implements IPathologyService {
   }
 
   public async verifyPathologyExisitsInHealthcareApi(): Promise<Pathology> {
-    return Promise.resolve(new Pathology())
+    return Promise.resolve(new Pathology('eeeeeeeee', 'fffffffffffffff'))
   }
 }
 

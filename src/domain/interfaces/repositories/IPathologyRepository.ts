@@ -1,14 +1,17 @@
 import { UpdateResult } from "typeorm";
 import { DeleteResult } from "typeorm";
-import PathologyRequest from "../../../api/requests/PathologyRequest";
-import Pathology from "../../../core/entities/Pathology";
+import CreatePathologyRequest from "../../../api/requests/Pathology/CreatePathologyRequest";
+import FindAllPathologyRequest from "../../../api/requests/Pathology/FindAllPathologyRequest";
+import UpdatePathologyRequest from "../../../api/requests/Pathology/UpdatePathologyRequest";
+import Pathology from "../../../domain/entities/Pathology";
 
 export default interface IPathologyRepository 
 {
-    findAll(): Promise<Pathology[]> 
-    findOne(id: number): Promise<Pathology>;
-    create(pathology: Pathology): Promise<Pathology> 
-    update(pathology: PathologyRequest): Promise<UpdateResult> 
+    findAll(QueryParams: FindAllPathologyRequest): Promise<Pathology[]>     
+    findOne(id: Number): Promise<Pathology>;
+    create(pathology: CreatePathologyRequest): Promise<Pathology> 
+    update(pathology: UpdatePathologyRequest): Promise<UpdateResult> 
     remove(id: number): Promise<DeleteResult> 
 }
 
+ 

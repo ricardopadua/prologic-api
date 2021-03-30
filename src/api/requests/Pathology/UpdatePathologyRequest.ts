@@ -6,7 +6,7 @@ export default class UpdatePathologyRequest {
     this.UpdatedAt = new Date();
   }
 
-	id: number;
+	Id: number;
 
   @IsNotEmpty()
   CID: string;

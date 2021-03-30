@@ -1,6 +1,5 @@
 import { Action, RoutingControllersOptions, useExpressServer } from 'routing-controllers';
 import { createConnection, Connection, getRepository } from 'typeorm';
-import config  from 'config';
 import express from 'express';
 import cors from 'cors';
 import 'reflect-metadata';
@@ -8,41 +7,31 @@ import IoC  from './IoC';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import serveStatic from 'serve-static';
-import expressSession from 'express-session';
 import morgan from 'morgan';
 import compression from 'compression';
 import { Signale } from 'signale';
-import passport, { PassportStatic } from 'passport';
-import passportJWT from 'passport-jwt';
-import jwt from 'jsonwebtoken';
 import helmet from 'helmet';
-import cookieSession from 'cookie-session';
+import swagger from '../Swagger';
+import { Forbidden } from './api/operation-result/http-status/Forbidden';
 import { User } from './domain/entities/User';
-//  const JwtStrategy = passportJWT.Strategy;
-//  const ExtractJwt = passportJWT.ExtractJwt;
+import config  from 'config';
+import jwt from 'jsonwebtoken';
+import { TokenError } from './api/operation-result/http-status/TokenError';
+const { url, serve, setup } = swagger.Build();
 
 class Startup {
     private express: express.Application;
-    private passport: PassportStatic;
     private routingOptions: RoutingControllersOptions;
-    private expressSessionOptions: expressSession.SessionOptions;
-    private cookieSessionOptions:  CookieSessionInterfaces.CookieSessionOptions
-    private jwtStrategy = passportJWT.Strategy;
-    private extractJwt = passportJWT.ExtractJwt;
-    private passaport: passport.PassportStatic
     public server: express.Application;
     public log: Signale
 
     public constructor () {
       this.express = express();
-      this.passport = passport;
       IoC.containerRegister();
       this.log = this.Logger();
-      this.expressSession();
-      this.cookieSession()
-      this.middlewares();
-      this.database() 
       this.router();
+      this.middlewares();
+      this.database()
       this.server = useExpressServer(this.express, this.routingOptions);
     }
 
@@ -56,12 +45,7 @@ class Startup {
       this.express.use(helmet());
       this.express.use(cookieParser());
       this.express.use(serveStatic(__dirname + '../public'));
-      this.express.use(expressSession(this.expressSessionOptions));
-      // this.express.use(cookieSession(this.cookieSessionOptions));
-      // this.express.set('trust proxy', 1);
-      // this.passport.use(this.StrategiesForJwt());ls
-      this.express.use(this.passport.initialize());
-      this.express.use(this.passport.session());
+      this.express.use(url, serve, setup);
     }
 
     private Logger (): Signale {
@@ -70,7 +54,7 @@ class Startup {
         interactive: false,
         stream: process.stdout,
       });
-  
+
       _signale.config({
         displayFilename: true,
         displayTimestamp: true,
@@ -79,20 +63,26 @@ class Startup {
     return _signale;
     }
 
-    private authorization (action: Action, roles: string[]) {
-      const token = action.request.headers['authorization'];
+    private async authorization (action: Action, roles: string[]) {
+      const token = action.request.headers['authorization'].split('Bearer ')[1];
+      const secret: string = config.get('expressSessionOptions.secret');
+      const decoded: any = jwt.verify(token, secret, function(err, decoded) {
+        if (err) throw new TokenError(err.name, err.message, [err.message]);
+        return decoded;
+        });
 
-      const user = getRepository(User).findOneByToken(User, token);
-      if (user && !roles.length) return true;
-      if (user && roles.find(r => user.role.indexOf(r) !== -1)) return true;
-  
-      return false;
-    }
+      const user = await getRepository(User)
+      .createQueryBuilder()
+      .select(["nickname", "role"])
+      .where("nickname = :nickname", { nickname: decoded.data })
+      .execute();
 
-    private currentUser (action: Action) {
-      const token = action.request.headers['authorization'];
-      return getRepository(User).findOneByToken(User, token); 
-      return false;
+      if (user.length === 0) throw new TokenError('UserError', 'Nickname not found', ['nickname not found for any users']);
+
+      if (!roles.find(role => user.filter((i: any) => i.role === role).length > 0))
+        throw new Forbidden([roles.map((i) => `User without permission for role ${i}`)]);
+      
+      return true;
     }
 
     private router () {
@@ -105,29 +95,7 @@ class Startup {
         validation: true,
         defaultErrorHandler: false,
         authorizationChecker: this.authorization,
-        currentUserChecker: this.currentUser,
       };
-    } 
-
-    private expressSession () {
-      this.expressSessionOptions = { 
-        secret: config.get('expressSessionOptions.secret'), 
-        resave: true, 
-        name : 'sessionId',
-        saveUninitialized: true, 
-        cookie: { maxAge: 60 * 60 * 1000 } };  // 1 hour  
-    } 
-
-    private cookieSession () {
-      this.cookieSessionOptions = { 
-        name: 'session',
-        keys: ['key1', 'key2'],
-        secure: true,
-        httpOnly: true,
-        domain: config.get('cookieSessionOptions.domain'),
-        path: config.get('cookieSessionOptions.path'),
-        expires: new Date( Date.now() + 60 * 60 * 1000 ) // 1 hour  
-      } 
     }
 
     private async database (): Promise<Connection> {

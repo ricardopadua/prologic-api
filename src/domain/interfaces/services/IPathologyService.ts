@@ -1,4 +1,4 @@
-import Pathology from "../../../core/entities/Pathology";
+import Pathology from "../../../domain/entities/Pathology";
 
 export default interface IPathologyService
 {

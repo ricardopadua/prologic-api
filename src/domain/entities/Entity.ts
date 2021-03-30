@@ -1,19 +1,16 @@
-import { IsNotEmpty, Length } from 'class-validator';
 import { Column, CreateDateColumn, Entity as Entities, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 
 @Entities()
 export default class Entity {
 
     @PrimaryGeneratedColumn({ unsigned: true, name: 'id' })
-	  public id: number;
+	  public Id: number;
 
-    @Column({ name: 'created_at' })
-    @CreateDateColumn()
-    public CreatedAt: Date;
+    @CreateDateColumn({ type: 'timestamp', name: 'created_at', default: () => 'LOCALTIMESTAMP' })
+    public CreatedAt!: Date;
 
-    @Column({ name: 'updated_at' })
-    @UpdateDateColumn()
-    public UpdatedAt: Date;
+    @UpdateDateColumn({ type: 'timestamp', name: 'updated_at', default: () => 'LOCALTIMESTAMP' })
+    public UpdatedAt!: Date;
 
 }
 

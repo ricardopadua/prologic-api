@@ -2,7 +2,9 @@ import { injectable, unmanaged } from 'inversify';
 import { Repository, getRepository, DeleteResult, UpdateResult } from 'typeorm';
 import IPathologyRepository from '../../domain/interfaces/repositories/IPathologyRepository';
 import Pathology from '../../domain/entities/Pathology';
-import UpdatePathologyRequest from '../../api/requests/UpdatePathologyRequest';
+import UpdatePathologyRequest from '../../api/requests/Pathology/UpdatePathologyRequest';
+import CreatePathologyRequest from '../../api/requests/Pathology/CreatePathologyRequest';
+import FindAllPathologyRequest from '../../api/requests/Pathology/FindAllPathologyRequest';
 
  @injectable()
 export default class PathologyRepository implements IPathologyRepository  {
@@ -21,16 +23,16 @@ export default class PathologyRepository implements IPathologyRepository  {
 	 * @param take param sample doc
 	 * @returns return sample doc
 	 */
-  public async  findAll(): Promise<Pathology[]> {
-    return await this._context.find();
+  public async  findAll(request: FindAllPathologyRequest): Promise<Pathology[]> {
+    return await this._context.find(request.pagination());
   }
 
   public async  findOne(id: number): Promise<Pathology> {
-    return await this._context.findOne(id);
+    return await this._context.findOne(id); 
   }
 
-  public async  create(pathology: Pathology): Promise<Pathology> {
-    return await this._context.create(pathology);
+  public async  create(request: CreatePathologyRequest): Promise<Pathology> {
+    return await this._context.save(request);
   }
 
   public async  update(pathology: UpdatePathologyRequest): Promise<UpdateResult> {
@@ -38,7 +40,7 @@ export default class PathologyRepository implements IPathologyRepository  {
       .createQueryBuilder()
       .update(Pathology)
       .set({ CID: pathology.CID, Description: pathology.Description, UpdatedAt: new Date() })
-      .where("id = :id", { id: pathology.id })
+      .where("id = :id", { id: pathology.Id })
       .execute();
     return result;
   }
