@@ -1,26 +1,20 @@
-import config  from 'config';
+import environment from './config/'
 
 module.exports = {
-   "type": config.get('typeOrmConfig.type'),
-   "host": config.get('typeOrmConfig.host'),
-   "port": config.get('typeOrmConfig.port'),
-   "username": config.get('typeOrmConfig.username'),
-   "password": config.get('typeOrmConfig.password'),
-   "database": config.get('typeOrmConfig.database'),
-   "synchronize": config.get('typeOrmConfig.synchronize'),
-   "logging": config.get('typeOrmConfig.logging'),
-   "entities": [
-      "src/domain/entities/**/*.ts"
-   ],
-   "migrations": [
-      "src/infra/migrations/**/*.ts"
-   ],
-   "subscribers": [
-      "src/subscriber/**/*.ts"
-   ],
-   "cli": {
-      "entitiesDir": "src/domain/entities",
-      "migrationsDir": "src/infra/migrations",
-      "subscribersDir": "src/subscriber"
+   type: environment.typeorm.type,
+   host: environment.typeorm.host,
+   port: environment.typeorm.port,
+   username: environment.typeorm.username,
+   password: environment.typeorm.password,
+   database: environment.typeorm.database,
+   synchronize: environment.typeorm.synchronize,
+   logging: environment.typeorm.logging,
+   entities: ["src/domain/entities/**/*.ts"],
+   migrations: ["src/infra/migrations/**/*.ts"],
+   subscribers: ["src/subscriber/**/*.ts"],
+   cli: {
+      entitiesDir: "src/domain/entities",
+      migrationsDir: "src/infra/migrations",
+      subscribersDir: "src/subscriber"
    }
 }

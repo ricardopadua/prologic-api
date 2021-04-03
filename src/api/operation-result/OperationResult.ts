@@ -1,4 +1,4 @@
-import { injectable } from "inversify";
+import { injectable } from "inversify"; 
 import { BadRequest } from "./http-status/BadRequest";
 import { Forbidden } from "./http-status/Forbidden";
 import { HttpCreated } from "./http-status/HttpCreated";
@@ -7,12 +7,12 @@ import { NotFound } from "./http-status/NotFound";
 import { Unauthorized } from "./http-status/Unauthorized";
 
 export interface IOperationResult {
-  Ok(data?: any[]): HttpOk;
-  Created(data?: any[]): HttpCreated;
-  BadRequest(data?: any[]): BadRequest;
-  Unauthorized(data?: any[]): Unauthorized;
-  Forbidden(data?: any[]): Forbidden;
-  NotFound(data?: any[]): NotFound;
+  Ok<T>(data?: T[]): HttpOk<T>;
+  Created<T>(data?: T[]): HttpCreated<T>;
+  BadRequest<T>(data?: T[]): BadRequest<T>;
+  Unauthorized<T>(data?: T[]): Unauthorized<T>;
+  Forbidden<T>(data?: T[]): Forbidden<T>;
+  NotFound<T>(data?: T[]): NotFound<T>;
 }
 
 @injectable()
@@ -21,28 +21,28 @@ export class OperationResult implements IOperationResult {
 
     }
 
-    public Ok(data?: any[]): HttpOk {
-        return new HttpOk(data || []);
+      public Ok<T>(data?: T[]): HttpOk<T> {
+        return new HttpOk<T>(data ?? []);
       }
 
-    public Created(data?: any[]): HttpCreated {
-        return new HttpCreated(data || []);
+    public Created<T>(data?: T[]): HttpCreated<T> {
+        return new HttpCreated<T>(data ?? []);
       }
 
-    public BadRequest(data?: any[]): BadRequest {
-        return new BadRequest(data || []);
+    public BadRequest<T>(data?: T[]): BadRequest<T> {
+        return new BadRequest<T>(data ?? []);
       }
 
-    public Unauthorized(data?: any[]): Unauthorized {
-        return new Unauthorized(data || []);
+    public Unauthorized<T>(data?: T[]): Unauthorized<T> {
+        return new Unauthorized<T>(data ?? []);
       }
 
-    public Forbidden(data?: any[]): Forbidden {
-        return new Forbidden(data || []);
+    public Forbidden<T>(data?: T[]): Forbidden<T> {
+        return new Forbidden<T>(data ?? []);
       }
 
-    public NotFound(data?: any[]): NotFound {
-        return new NotFound(data || []);
+    public NotFound<T>(data?: T[]): NotFound<T> {
+        return new NotFound<T>(data ?? []);
       }
 
   }

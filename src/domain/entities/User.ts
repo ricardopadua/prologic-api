@@ -8,17 +8,19 @@ import moment from "moment";
   @Entities({ name: 'user'})
   @Unique(['Email'])
   export class User extends Entity {
+    CheckIfUnencryptedRoleIsValidrole(role: string) {
+      throw new Error('Method not implemented.');
+    }
 
-    constructor(firstName: string, lastName: string, email: string, avatar: string, password: string, role?: string[]) {
+    constructor(firstName: string, lastName: string, email: string, avatar: string, password: string, role?: string) {
         super();
         this.FirstName = firstName;
         this.LastName = lastName;
         this.Email = email;
         this.Avatar = avatar;
-        this.Active = false,
-        this.EncryptedRole(role || ['GUEST']); 
-        this.HashPassword(password)
-        this.GenerateNickName(firstName, lastName)
+        this.Active = false;
+        this.Password = password;
+        this.Role = role;
     }
 
 
@@ -44,7 +46,7 @@ import moment from "moment";
     public Avatar?: string;
 
     @Length(4, 40)
-    @Column({ name: 'password', select: false })
+    @Column({ name: 'password'})
     public Password: string;
   
     @IsNotEmpty({ message: 'Role Is not Empty'})
@@ -58,13 +60,11 @@ import moment from "moment";
     
   
     public HashPassword(password: string): void {
-      const _password = ''.concat(password);
-      this.Password = bcrypt.hashSync(_password.trim(), 8);
+      this.Password = bcrypt.hashSync(password, bcrypt.genSaltSync(10));
     }
 
-    public EncryptedRole(role: string[]): void {
-      const _role = ''.concat(role.join());
-      this.Role = bcrypt.hashSync(_role.trim(), 8);
+    public EncryptedRole(role: string): void {
+      this.Role = bcrypt.hashSync(role, bcrypt.genSaltSync(10));
     }
 
     public GenerateNickName(firstName: string, lastName: string): void {

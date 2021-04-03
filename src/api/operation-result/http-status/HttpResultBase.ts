@@ -1,6 +1,6 @@
 
-export class HttpResultBase {
-    constructor(httpCode: number, name: string, message: string, error: any[]) {
+export class HttpResultBase<T> {
+    constructor(httpCode: number, name: string, message: string, error: T[]) {
         this.Status = false;
         this.HttpCode = httpCode;
         this.Name = name;
@@ -12,5 +12,5 @@ export class HttpResultBase {
     public HttpCode: number;
     public Name: string;
     public Message: string;
-    public Error: any[];
+    public Error: T[];
 }

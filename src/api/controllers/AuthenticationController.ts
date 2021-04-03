@@ -1,36 +1,30 @@
 import { injectable, inject } from 'inversify';
 import { JsonController, Param, Body, Get, Post } from 'routing-controllers';
-import { Roles as _ } from '../../domain/enums/Roles';
+import { Roles } from '../../domain/enums/Roles';
 import RegisterRequest from '../requests/User/UserRegisterRequest';
-import jwt from 'jsonwebtoken';
 import { Authorized } from 'routing-controllers';
-import config  from 'config';
 import { IUserRequestHandler } from '../request-handlers/UserRequestHandler';
 import UserLoginRequest from '../requests/User/UserLoginRequest';
+import { TYPES } from '../../Types';
+import UserLogoutRequest from '../requests/User/UserLogoutRequest';
 
 @injectable()
 @JsonController('/auth')
 export default class AuthenticationController {
 
-  public constructor(@inject('UserRequestHandler') private readonly _handle: IUserRequestHandler) {}
+  public constructor(@inject(TYPES.UserRequestHandler) private readonly _handle: IUserRequestHandler) {}
 
   @Post('/login')
   public Login(@Body({ validate: true }) request: UserLoginRequest) 
   {
     return this._handle.SendCommand(request);
-        // const secret: string = config.get('expressSessionOptions.secret');
-
-    // const token = jwt.sign({ 
-    //   data: user.Nickname
-    // }, secret, { expiresIn: 900});
-    return 'login';
   }
 
-  @Authorized(['POST_MODERATOR', 'POST_CREATOR'])
+  @Authorized([Roles.User, Roles.Guest])
   @Get('/logout')
-  public Logout() 
+  public Logout(request = new UserLogoutRequest) 
   {
-    return 'logout';
+    return this._handle.SendCommand(request);
   }
 
   @Post('/register')
@@ -40,9 +34,9 @@ export default class AuthenticationController {
   }
 
   @Get('/my-information')
-  public MyInformation(@Param('id') id: Number) 
+  public MyInformation(@Param('id') id: RegisterRequest) 
   {
-    
-    return 'my information'
+    type MyInformationRequest = Number;
+    return this._handle.SendCommand(id);
   }
 }

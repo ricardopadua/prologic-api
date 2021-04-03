@@ -1,5 +1,6 @@
 import { inject, injectable } from 'inversify';
 import IPathologyRepository from '../../domain/interfaces/repositories/IPathologyRepository';
+import { TYPES } from '../../Types';
 import CreatePathologyRequest from '../requests/Pathology/CreatePathologyRequest';
 import FindAllPathologyRequest from '../requests/Pathology/FindAllPathologyRequest';
 import FindOnePathologyRequest from '../requests/Pathology/FindOnePathologyRequest';
@@ -17,7 +18,7 @@ export interface IPathologyRequestHandler {
 
 @injectable()
 export default class PathologyRequestHandler implements IPathologyRequestHandler {
-    public constructor(@inject('PathologyRepository') private readonly _repository: IPathologyRepository) {}
+    public constructor(@inject(TYPES.PathologyRepository) private readonly _repository: IPathologyRepository) {}
 
     public SendCommand(request: any) {
         const Handle = {

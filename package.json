@@ -59,6 +59,8 @@
       "express": "^4.17.1",
       "express-jwt": "^6.0.0",
       "express-session": "^1.17.1",
+      "getmodule": "^1.0.0",
+      "glob": "^7.1.6",
       "helmet": "^4.4.1",
       "https": "^1.0.0",
       "inversify": "^5.0.5",

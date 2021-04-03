@@ -3,12 +3,13 @@ import Pathology from "../../domain/entities/Pathology";
 import IPathologyRepository from "../../domain/interfaces/repositories/IPathologyRepository";
 import IPathologyService from "../../domain/interfaces/services/IPathologyService";
 export const typeUserService = Symbol.for('UserService');
+import { TYPES } from "../../Types";
 
 @injectable()
 export default class PathologyService implements IPathologyService {
   private _repository: IPathologyRepository;
 
-  public constructor(@inject('PathologyRepository') repository: IPathologyRepository) 
+  public constructor(@inject(TYPES.PathologyRepository) repository: IPathologyRepository) 
   {
     this._repository = repository;
   }
