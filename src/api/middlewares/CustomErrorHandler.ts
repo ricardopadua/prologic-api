@@ -38,9 +38,9 @@ export class CustomErrorHandler implements ExpressErrorMiddlewareInterface {
       404: (error: NotFound<string>) =>  notFoundUser(error)
     }
 
-    error.HttpCode 
-    ? objectErrorHandler[error.HttpCode](error)
-    : objectErrorHandler[400](new BadRequest<any>([error.message, ...error?.errors]));
+    error.HttpCode === undefined && objectErrorHandler[400](new BadRequest<any>([error.message]));
+    objectErrorHandler[error.HttpCode](error); 
+    
     
   }
 } 

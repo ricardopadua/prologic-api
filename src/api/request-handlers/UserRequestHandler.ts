@@ -77,9 +77,9 @@ export default class UserRequestHandler implements IUserRequestHandler {
         if (!emailIsValid) return this._operationResult.BadRequest([`The email ${request.Email} is already in use.`]);
 
         const user = new User(request.FirstName, request.LastName, request.Email, null, request.Password);
-        const userRegistred = await this._repository.Register(user);
+        const userRegistered = await this._repository.Register(user);
 
-        return this._operationResult.Created([userRegistred])
+        return this._operationResult.Created([userRegistered])
     };
 
 }

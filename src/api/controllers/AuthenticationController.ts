@@ -1,5 +1,5 @@
 import { injectable, inject } from 'inversify';
-import { JsonController, Param, Body, Get, Post } from 'routing-controllers';
+import { JsonController, Body, Get, Post } from 'routing-controllers';
 import { Roles } from '../../domain/enums/Roles';
 import RegisterRequest from '../requests/User/UserRegisterRequest';
 import { Authorized } from 'routing-controllers';
@@ -31,12 +31,5 @@ export default class AuthenticationController {
   public RegisterUser(@Body({ validate: true }) request: RegisterRequest) 
   {
      return this._handle.SendCommand(request);
-  }
-
-  @Get('/my-information')
-  public MyInformation(@Param('id') id: RegisterRequest) 
-  {
-    type MyInformationRequest = Number;
-    return this._handle.SendCommand(id);
   }
 }

@@ -3,7 +3,6 @@ import { Repository, getRepository, DeleteResult, UpdateResult } from 'typeorm';
 import IPathologyRepository from '../../domain/interfaces/repositories/IPathologyRepository';
 import Pathology from '../../domain/entities/Pathology';
 import UpdatePathologyRequest from '../../api/requests/Pathology/UpdatePathologyRequest';
-import CreatePathologyRequest from '../../api/requests/Pathology/CreatePathologyRequest';
 import FindAllPathologyRequest from '../../api/requests/Pathology/FindAllPathologyRequest';
 
  @injectable()
@@ -31,28 +30,21 @@ export default class PathologyRepository implements IPathologyRepository  {
     return await this._context.findOne(id); 
   }
 
-  public async  create(request: CreatePathologyRequest): Promise<Pathology> {
-    return await this._context.save(request);
-  }
+  public async  create(pathology: Pathology): Promise<Pathology> {
+    return await this._context.save(pathology);
+  } 
 
   public async  update(pathology: UpdatePathologyRequest): Promise<UpdateResult> {
     const result = await this._context
       .createQueryBuilder()
       .update(Pathology)
-      .set({ CID: pathology.CID, Description: pathology.Description, UpdatedAt: new Date() })
+      .set({ CID: pathology.CID, Description: pathology.Description })
       .where("id = :id", { id: pathology.Id })
       .execute();
     return result;
   }
 
   public async remove(id: number): Promise<DeleteResult> {
-    const result = await this._context
-      .createQueryBuilder()
-      .delete()
-      .from(Pathology)
-      .where("id = :id", { id: id })
-      .execute();
-    return result;
+    return await this._context.delete(id);
   }
-
 }

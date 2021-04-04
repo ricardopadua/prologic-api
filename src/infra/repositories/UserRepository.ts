@@ -68,11 +68,13 @@ export default class UserRepository implements IUserRepository {
    * @returns return Promisse<User> 
    */
 
-  public async Register(user: User): Promise<User> {
+  public async Register(user: User): Promise<any> {
     user.EncryptedRole(user.Role ?? ['GUEST'].toString());
     user.HashPassword(user.Password.trim())
     user.GenerateNickName(user.FirstName.trim(), user.LastName.trim())
-    return await this._context.save(user);
+    const _data = await this._context.save(user);
+    const { Id, Nickname, Role, FirstName, LastName, Email } = _data;
+    return { Id, Nickname, Role, FirstName, LastName, Email };
   }
 
   /**
