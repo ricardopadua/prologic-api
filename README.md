@@ -55,10 +55,10 @@ Follow these steps and quickly your application will be running, remember the pu
 ```json
 {
     "ioc": {
-        "childContainerBind": "" // environment variable of the production file, represents the production environment. 
+        "childContainerBind": ""
     },
     "cryptography": {
-        "passwordDefault": "" // environment variable of the production file, represents the production environment. 
+        "passwordDefault": ""
     }
 }
 ```
