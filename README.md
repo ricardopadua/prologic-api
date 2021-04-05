@@ -83,7 +83,7 @@ export default environment;
 <!-- DOCKER -->
 ### docker (Optional)
 1. If you want to run the application in docker, configure the file docker-compose and after the command `docker-compose up --build -d`
-2. Configure the environment variables in the config folder `/config` , there are 3 configuration files, the `default.json` that represents the development environment, the `production.json` that represents the production environment and the `index.ts` that imports these configured environments and exports these constants to the application. Observe the example respectively:
+2. Configure the environment variables for containers in `docker-compose.yml`  file:
 ##### docker-compose.yml
 ```yml
 version: '3.4'
