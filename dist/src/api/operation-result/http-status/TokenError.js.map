@@ -1,1 +1,0 @@
-{"version":3,"file":"TokenError.js","sourceRoot":"","sources":["../../../../../src/api/operation-result/http-status/TokenError.ts"],"names":[],"mappings":";;;AAAA,qDAAkD;AAElD,MAAa,UAAc,SAAQ,+BAAiB;IAClD,YAAY,IAAY,EAAE,KAAU;QAClC,KAAK,CAAC,GAAG,EAAE,IAAI,EAAE,8CAA8C,EAAE,KAAK,CAAC,CAAC;IAC1E,CAAC;CACF;AAJD,gCAIC"}
