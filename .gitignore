@@ -5,3 +5,5 @@ config
 build/
 tmp/
 temp/
+dist
+build
