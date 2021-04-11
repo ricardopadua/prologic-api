@@ -1,12 +1,11 @@
-import { IsEmail, Length, MinLength, IsNotEmpty } from "class-validator";
+import { IsEmail, Length, MinLength, IsNotEmpty } from 'class-validator';
 
 export default class UpdatePathologyRequest {
-
-  constructor(){
+  constructor() {
     this.UpdatedAt = new Date();
   }
 
-	Id: number;
+  Id: number;
 
   @IsNotEmpty()
   CID: string;
@@ -15,5 +14,4 @@ export default class UpdatePathologyRequest {
   Description: string;
 
   UpdatedAt: Date;
-
 }

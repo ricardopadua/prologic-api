@@ -11,25 +11,23 @@ import UserLogoutRequest from '../requests/User/UserLogoutRequest';
 @injectable()
 @JsonController('/auth')
 export default class AuthenticationController {
-
-  public constructor(@inject(TYPES.UserRequestHandler) private readonly _handle: IUserRequestHandler) {}
+  public constructor(
+    @inject(TYPES.UserRequestHandler) private readonly _handle: IUserRequestHandler,
+  ) {}
 
   @Post('/login')
-  public Login(@Body({ validate: true }) request: UserLoginRequest) 
-  {
+  public Login(@Body({ validate: true }) request: UserLoginRequest) {
     return this._handle.SendCommand(request);
   }
 
   @Authorized([Roles.User, Roles.Guest])
   @Get('/logout')
-  public Logout(request = new UserLogoutRequest) 
-  {
+  public Logout(request = new UserLogoutRequest()) {
     return this._handle.SendCommand(request);
   }
 
   @Post('/register')
-  public RegisterUser(@Body({ validate: true }) request: RegisterRequest) 
-  {
-     return this._handle.SendCommand(request);
+  public RegisterUser(@Body({ validate: true }) request: RegisterRequest) {
+    return this._handle.SendCommand(request);
   }
 }

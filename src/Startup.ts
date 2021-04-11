@@ -16,8 +16,9 @@ import IoC from './IoC';
 import { Forbidden } from './api/operation-result/http-status/Forbidden';
 import { User } from './domain/entities/User';
 import { TokenError } from './api/operation-result/http-status/TokenError';
-import environment from '../config'
-import * as bcrypt from "bcryptjs";
+import environment from '../config';
+import * as bcrypt from 'bcryptjs';
+import actuator from 'express-actuator';
 
 const { url, serve, setup } = swagger.Build();
 
@@ -25,7 +26,7 @@ class Startup {
   private Express: express.Application;
   private RoutingOptions: RoutingControllersOptions;
   public Server: express.Application;
-  public Log: Signale
+  public Log: Signale;
 
   public constructor() {
     IoC.ContainerRegister();
@@ -38,20 +39,27 @@ class Startup {
   }
 
   private Middlewares(): void {
-    this.Express.use(express.json())
-    this.Express.use(cors())
+    this.Express.use(express.json());
+    this.Express.use(cors());
     this.Express.use(morgan(environment.express.morganFormat));
     this.Express.use(bodyParser.json({ limit: environment.express.bodyParserLimit }));
-    this.Express.use(bodyParser.urlencoded({ limit: environment.express.bodyParserLimit, extended: false }));
+    this.Express.use(
+      bodyParser.urlencoded({ limit: environment.express.bodyParserLimit, extended: false }),
+    );
     this.Express.use(compression());
     this.Express.use(helmet());
     this.Express.use(cookieParser());
-    this.Express.use(environment.express.staticRoute, serveStatic(__dirname + environment.express.staticFolder));
+    this.Express.use(
+      environment.express.staticRoute,
+      serveStatic(environment.express.staticFolder),
+    );
+    this.Express.use(environment.express.faviconPath);
+    this.Express.use(actuator(environment.actuatorOptions));
     this.Express.use(url, serve, setup);
   }
 
   private Logger(): void {
-    let _signale = new Signale(environment.signale.object)
+    let _signale = new Signale(environment.signale.object);
     _signale.config(environment.signale.config);
     this.Log = _signale;
   }
@@ -65,7 +73,6 @@ class Startup {
   }
 
   private async Authorization(action: Action, roles: string[]) {
-
     const verifyUserToken = (action: Action) => {
       const token = action.request.headers['authorization'].split('Bearer ')[1];
       const secret: string = environment.express.secret;
@@ -74,22 +81,23 @@ class Startup {
         return decoded;
       });
       return decoded;
-    } 
+    };
 
     const verifyUserRoles = async (data: any, roles: string[]) => {
       const user = await getRepository(User)
         .createQueryBuilder()
-        .select(["nickname", "role"])
-        .where("nickname = :nickname", { nickname: data.data.nickname })
+        .select(['nickname', 'role'])
+        .where('nickname = :nickname', { nickname: data.data.nickname })
         .execute();
-  
-      if (user.length === 0) throw new TokenError<string>('UserError', ['nickname not found for any users']);
-  
-      if (!roles.find(role => bcrypt.compareSync(role, user[0].role) === true))
+
+      if (user.length === 0)
+        throw new TokenError<string>('UserError', ['nickname not found for any users']);
+
+      if (!roles.find((role) => bcrypt.compareSync(role, user[0].role) === true))
         throw new Forbidden<string>([...roles.map((i) => `User without permission for role ${i}`)]);
-  
+
       return true;
-    }
+    };
 
     const token = verifyUserToken(action);
     const rolesIsValid = await verifyUserRoles(token, roles);

@@ -6,13 +6,10 @@ COPY package.json .
 COPY package-lock.json .
 COPY ./src ./src
 COPY ./dist ./dist
-COPY ./resources ./resources
-COPY ./spec ./spec
+COPY ./public ./public
 
-RUN npm install --production
+RUN npm install
 
 EXPOSE 8433
-ENV PORT 8433
-ENV NODE_ENV production
 
-CMD ["npm", "start:prod"]
+CMD ["npm", "prod"]

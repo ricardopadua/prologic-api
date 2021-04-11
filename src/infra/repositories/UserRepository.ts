@@ -7,9 +7,7 @@ import IUserRepository from '../../domain/interfaces/repositories/IUserRepositor
 export default class UserRepository implements IUserRepository {
   private readonly _context: Repository<User>;
 
-  public constructor(
-    @unmanaged() context: Repository<User>
-  ) {
+  public constructor(@unmanaged() context: Repository<User>) {
     this._context = context;
     this._context = getRepository(User);
   }
@@ -20,7 +18,7 @@ export default class UserRepository implements IUserRepository {
    * @param skip: receives the page and calculates the initial amount to be ignored
    * @returns return paginated User
    */
-  public async FindAll(take: number, skip: number): Promise<{ data: User[], total: number }> {
+  public async FindAll(take: number, skip: number): Promise<{ data: User[]; total: number }> {
     const [data, total] = await this._context.findAndCount({ take, skip });
     return { data, total };
   }
@@ -31,8 +29,9 @@ export default class UserRepository implements IUserRepository {
    * @returns return true when the user is found
    */
   public async Exist(email: string): Promise<boolean> {
-    const user = await this._context.createQueryBuilder()
-      .where("email = :email", { email: email })
+    const user = await this._context
+      .createQueryBuilder()
+      .where('email = :email', { email: email })
       .execute();
     return user.length === 1;
   }
@@ -43,8 +42,9 @@ export default class UserRepository implements IUserRepository {
    * @returns return true when the user is found
    */
   public async FindOne(email: string): Promise<User> {
-    const user = await this._context.createQueryBuilder()
-      .where("email = :email", { email: email })
+    const user = await this._context
+      .createQueryBuilder()
+      .where('email = :email', { email: email })
       .getOne();
     return user;
   }
@@ -56,22 +56,23 @@ export default class UserRepository implements IUserRepository {
    * @returns return true when the email and password is valid
    */
   public async Authenticate(email: string, password: string) {
-    const user = await this._context.createQueryBuilder()
-      .where("email = :email", { email: email })
+    const user = await this._context
+      .createQueryBuilder()
+      .where('email = :email', { email: email })
       .getOne();
-    return (user && user.CheckIfUnencryptedPasswordIsValid(password));
+    return user && user.CheckIfUnencryptedPasswordIsValid(password);
   }
 
   /**
    * User Register documentation
    * @param user param for creating new User
-   * @returns return Promisse<User> 
+   * @returns return Promisse<User>
    */
 
   public async Register(user: User): Promise<any> {
     user.EncryptedRole(user.Role ?? ['GUEST'].toString());
-    user.HashPassword(user.Password.trim())
-    user.GenerateNickName(user.FirstName.trim(), user.LastName.trim())
+    user.HashPassword(user.Password.trim());
+    user.GenerateNickName(user.FirstName.trim(), user.LastName.trim());
     const _data = await this._context.save(user);
     const { Id, Nickname, Role, FirstName, LastName, Email } = _data;
     return { Id, Nickname, Role, FirstName, LastName, Email };
@@ -86,10 +87,16 @@ export default class UserRepository implements IUserRepository {
    */
 
   public async UpdateUserInfo(user: User): Promise<UpdateResult> {
-    const result = await this._context.createQueryBuilder()
+    const result = await this._context
+      .createQueryBuilder()
       .update(User)
-      .set({ FirstName: user.FirstName, LastName: user.LastName, Avatar: user.Avatar, UpdatedAt: new Date() })
-      .where("nickname = :nickname", { nickname: user.Nickname })
+      .set({
+        FirstName: user.FirstName,
+        LastName: user.LastName,
+        Avatar: user.Avatar,
+        UpdatedAt: new Date(),
+      })
+      .where('nickname = :nickname', { nickname: user.Nickname })
       .execute();
     return result;
   }
@@ -102,12 +109,12 @@ export default class UserRepository implements IUserRepository {
    */
 
   public async CheckIfNeedActivation(nickname: string, mark: boolean): Promise<UpdateResult> {
-    const result = await this._context.createQueryBuilder()
+    const result = await this._context
+      .createQueryBuilder()
       .update(User)
       .set({ Active: mark, UpdatedAt: new Date() })
-      .where("nickname = :nickname", { nickname: nickname })
+      .where('nickname = :nickname', { nickname: nickname })
       .execute();
     return result;
   }
-
 }

@@ -1,6 +1,7 @@
 version: '3.4'
 services:
-  server:
+  prologic-api:
+    container_name: prologic-webapi
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -8,14 +9,17 @@ services:
         - http_proxy
         - https_proxy
         - no_proxy
-    image: prologyc/server:latest
+    image: prologic/webapi:${PROLOGIC_WEBAPI_TAG}
     ports:
       - '8433:8433'
+    depends_on:
+      - "prologic-db"
     stdin_open: true
     tty: true
-  postgres-log:
+
+  prologic-db:
     image: 'postgres:9.6.2'
-    container_name: postgres
+    container_name: prologic-db
     environment:
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -31,7 +35,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - './docker-volumes/postgres-desenvolvimento:/var/lib/postgresql/data'
+      - './docker-volumes/postgres:/var/lib/postgresql/data'   
 
 
       
