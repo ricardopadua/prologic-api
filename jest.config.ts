@@ -23,10 +23,10 @@ module.exports = {
   // An object that configures minimum threshold enforcement for coverage results
   coverageThreshold: {
     global: {
-      'branches': 70,
-      'functions': 70,
-      'lines': 70,
-      'statements': 70
+      'branches': 90,
+      'functions': 90,
+      'lines': 90,
+      'statements': 90
     }
   },
 
@@ -44,12 +44,15 @@ module.exports = {
   testEnvironment: 'node',
 
   // The glob patterns Jest uses to detect test files
-  testMatch: [
-    '**/src/**/__tests__/**/*.[jt]s?(x)',
-    '**/src/**/?(*.)+(spec|test).[tj]s?(x)'
-  ],
+  // testMatch: [
+  //   '**/src/**/__tests__/**/*.[jt]s?(x)',
+  //   '**/src/**/?(*.)+(spec|test).[tj]s?(x)'
+  // ],
   // A map from regular expressions to paths to transformers
   transform: {
     '\\.(ts)$': 'ts-jest'
   }
+
+  //   // A preset that is used as a base for Jest's configuration
+  //   preset: 'ts-jest',
 }
