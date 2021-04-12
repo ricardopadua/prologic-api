@@ -12,6 +12,12 @@ services:
     image: prologic/webapi:${PROLOGIC_WEBAPI_TAG}
     ports:
       - '8433:8433'
+    hostname: prologic-webapi
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8433/management/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     depends_on:
       - "prologic-db"
     stdin_open: true

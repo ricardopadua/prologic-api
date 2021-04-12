@@ -69,7 +69,7 @@ class Startup {
   }
 
   private async Database() {
-    return await createConnection();
+    return await createConnection(environment.typeorm);
   }
 
   private async Authorization(action: Action, roles: string[]) {
