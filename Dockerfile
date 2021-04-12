@@ -2,14 +2,15 @@ FROM node:12.13.0-alpine
 
 RUN apk update && apk add build-base git python
 
-COPY package.json .
-COPY package-lock.json .
-COPY ./src ./src
-COPY ./dist ./dist
-COPY ./public ./public
+COPY . ./
+
 
 RUN npm install
+RUN npm run build
+ENV NODE_ENV=production
+
+COPY ./public ./dist/public
 
 EXPOSE 8433
 
-CMD ["npm", "prod"]
+CMD ["node", "./dist/src/Server.js"]

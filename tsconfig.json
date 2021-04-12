@@ -1,9 +1,7 @@
 {
+   "compileOnSave": false,
    "compilerOptions": {
-      "lib": [ "es5", "es6", "es7",
-         "es2015", "es2016",
-         "es2017", "es2018",
-         "esnext" ],
+      "lib": ["es5", "es6", "es7", "es2015", "es2016", "es2017", "es2018", "esnext"],
       "target": "es2017",
       "module": "commonjs",
       "moduleResolution": "node",
@@ -15,16 +13,10 @@
       "esModuleInterop": true,
       "resolveJsonModule": true,
       "types": ["node", "@types/jest"],
-      "typeRoots" : ["./node_modules/@types"],
+      "typeRoots" : ["node_modules/@types"],
    },
-   "include": [
-      "src/**/*",
-      "public/**/*",
-      "config/**/*"
-    ],
-    "exclude": [
-      "src/**/*.spec.ts"
-    ],
+   "include": ["src/**/*.ts"],
+    "exclude": ["src/**/*.spec.ts"],
     "linterOptions": {
       "exclude": []
     }
