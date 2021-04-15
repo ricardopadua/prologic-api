@@ -11,10 +11,10 @@ services:
         - no_proxy
     image: prologic/webapi:${PROLOGIC_WEBAPI_TAG}
     ports:
-      - '8433:8433'
+      - '8000:8000'
     hostname: prologic-webapi
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8433/management/health"]
+      test: ["CMD", "node", "healthcheck.js"]
       interval: 10s
       timeout: 5s
       retries: 5

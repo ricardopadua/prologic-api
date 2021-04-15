@@ -74,7 +74,8 @@ class Startup {
 
   private async Authorization(action: Action, roles: string[]) {
     const verifyUserToken = (action: Action) => {
-      const token = action.request.headers['authorization'].split('Bearer ')[1];
+      let token = action.request.headers['authorization']
+      if(token) token = token.split('Bearer ')[1];
       const secret: string = environment.express.secret;
       const decoded: any = jwt.verify(token, secret, function (err, decoded) {
         if (err) throw new TokenError(err.name, [err.message]);
