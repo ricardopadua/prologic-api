@@ -11,6 +11,6 @@ ENV NODE_ENV=production
 
 COPY ./public ./dist/public
 
-EXPOSE 8433
+EXPOSE 8000
 
 CMD ["node", "./dist/src/Server.js"]
