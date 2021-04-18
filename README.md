@@ -132,7 +132,7 @@ See the [sample gist configuration](https://gist.github.com/ricardopadua/8c1a8f7
 <!-- ROADMAP -->
 ## Roadmap
 
-See the [open issues](https://github.com/ricardopadua/prologyc-app/issues) for a list of proposed features (and known issues).
+See the [open issues](https://github.com/ricardopadua/prologic-webapi/issues) for a list of proposed features (and known issues).
 
 
 
@@ -161,4 +161,4 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 Ricardo Padua - [@RicardoPdua4](https://twitter.com/RicardoPdua4)
 
-Project Link: [https://github.com/ricardopadua/prologyc-app](https://github.com/ricardopadua/prologyc-app)
+Project Link: [https://github.com/ricardopadua/prologic-webapi](https://github.com/ricardopadua/prologic-webapi)
